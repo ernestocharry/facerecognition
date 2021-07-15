@@ -1,5 +1,6 @@
 from PIL import Image
 import face_recognition
+from numpy import *
 import glob
 
 # All files ending with .txt
@@ -24,26 +25,36 @@ for file in files:
         except:
             continue
 
-imfg = Image.open(r"faces/ATXME6008_cut.jpg").convert("RGBA")
-
-imbg = Image.open(r"faces/DSC_0040_cut.jpg").convert("RGBA")
-
-imbg_width, imbg_height = imbg.size
-imfg_resized = imfg.resize((imbg_width, imbg_height), Image.LANCZOS)
-
-#Test = Image.alpha_composite(imfg_resized, imbg_width)
-#Test.save("test.png", format="png")
-
-imbg = Image.open(r"faces/profile_smile._cut.jpg").convert("RGBA")
+imbg = Image.open(r"faces_cut/profile_serious._cut.jpg").convert("RGBA")
 blended = Image.blend(imbg, imbg, alpha=1)
-imbg_width, imbg_height = imbg.size
+imbg_width, imbg_height = blended.size
 
-files = glob.glob("faces/*_cut.jpg")
+files = glob.glob("faces_cut/*_cut.jpg")
+print('\nTotal archivos: ', len(files))
+nofiles = 1.5/(len(files))
+
+Fotos_resized = []
 for file in files:
     imfg = Image.open(file).convert("RGBA")
     imfg_resized = imfg.resize((imbg_width, imbg_height), Image.LANCZOS)
-    blended = Image.blend(imbg, imbg, alpha=1)
+    Fotos_resized.append(imfg_resized)
 
-blended = Image.blend(imfg_resized, imbg, alpha=1)
-blended.save("blended.png")
+for j, fotos in enumerate(Fotos_resized):
+    if j == 0:
+        im1arr = asarray(fotos)
+        im1arrF = im1arr.astype('float')
+        additionF = im1arrF
+    else:
+        im1arr = asarray(fotos)
+        im1arrF = im1arr.astype('float')
+        additionF += im1arrF
+
+additionF = additionF/len(Fotos_resized)
+addition = additionF.astype('uint8')
+resultImage = Image.fromarray(addition)
+resultImage.save("blended.png")
+
+blended = Image.blend(blended, resultImage,  alpha=0.9)
+blended.save("blended_2.png")
+
 
