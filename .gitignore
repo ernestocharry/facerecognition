@@ -1,4 +1,8 @@
 *.jpg
+*.png
+*.jpeg
+faces/*
+face_recognition/*
 
 # Bearmer files
 *.aux
