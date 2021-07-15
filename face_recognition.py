@@ -4,23 +4,25 @@ import glob
 
 # All files ending with .txt
 
-files = glob.glob("faces/*.jpeg")
+files = glob.glob("faces/*.JPG") + glob.glob("faces/*.jpg") + glob.glob("faces/*.jpeg")
 for file in files:
+    print(file)
     image = face_recognition.load_image_file(file)
     face_locations = face_recognition.face_locations(image)
     for face_location in face_locations:
-
         # Print the location of each face in this image
         top, right, bottom, left = face_location
-        delta_x = (right - left)*0.2
-        delta_y = (bottom - top)*0.2
+        delta_x = int((right - left)*0.3)
+        delta_y = int((bottom - top)*0.4)
         print("A face is located at pixel location Top: {}, Left: {}, Bottom: {}, Right: {}".format(top, left,
                                                                                                     bottom, right))
         # You can access the actual face itself like this:
-        face_image = image[top:bottom, left:right]
-        pil_image = Image.fromarray(face_image)
-        pil_image.save(file[:-4]+'_cut.jpg')
-
+        try:
+            face_image = image[top-delta_y:bottom+delta_y, left-delta_x:right+delta_x]
+            pil_image = Image.fromarray(face_image)
+            pil_image.save('faces_cut/' + file[6:-4] + '_cut.jpg')
+        except:
+            continue
 
 imfg = Image.open(r"faces/ATXME6008_cut.jpg").convert("RGBA")
 
